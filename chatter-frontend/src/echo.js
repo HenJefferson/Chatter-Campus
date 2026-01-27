@@ -3,18 +3,25 @@ import Pusher from 'pusher-js'
 
 window.Pusher = Pusher
 
+const API_ORIGIN =
+  import.meta.env.VITE_API_ORIGIN || 'http://127.0.0.1:8000'
+
+const REVERB_SCHEME = import.meta.env.VITE_REVERB_SCHEME || 'http'
+const REVERB_HOST = import.meta.env.VITE_REVERB_HOST || '127.0.0.1'
+const REVERB_PORT = Number(import.meta.env.VITE_REVERB_PORT || 8080)
+
 window.Echo = new Echo({
   broadcaster: 'reverb', // ✅ MUST be reverb
   key: import.meta.env.VITE_REVERB_APP_KEY,
 
-  wsHost: '127.0.0.1',
-  wsPort: 8080,
-  wssPort: 8080,
+  wsHost: REVERB_HOST,
+  wsPort: REVERB_PORT,
+  wssPort: REVERB_PORT,
 
-  forceTLS: false,
-  enabledTransports: ['ws'], // ❌ no sockjs, no xhr
+  forceTLS: REVERB_SCHEME === 'https',
+  enabledTransports: ['ws', 'wss'], // ❌ no sockjs, no xhr
 
-  authEndpoint: 'http://127.0.0.1:8000/broadcasting/auth',
+  authEndpoint: `${API_ORIGIN}/broadcasting/auth`,
   auth: {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
