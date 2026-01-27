@@ -1,9 +1,12 @@
 FROM richarvey/nginx-php-fpm:3.1.6
 
+# Put our app in the web root that nginx-php-fpm expects
+WORKDIR /var/www/html
 COPY . .
 
 # Image config
-ENV SKIP_COMPOSER 1
+# Let the base image run composer to install vendor/
+ENV SKIP_COMPOSER 0
 ENV WEBROOT /var/www/html/public
 ENV PHP_ERRORS_STDERR 1
 ENV RUN_SCRIPTS 1
