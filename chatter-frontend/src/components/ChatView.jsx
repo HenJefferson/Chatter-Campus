@@ -107,7 +107,9 @@ export default function ChatView() {
 
         try {
             await api.delete(`/messages/${messageId}`)
-            setMessages((prev) => prev.filter(m => m.id !== messageId))
+            setMessages((prev) => prev.map(m =>
+                m.id === messageId ? { ...m, deleted_at: new Date().toISOString() } : m
+            ))
         } catch (error) {
             console.error('Failed to delete message:', error)
             alert('Failed to delete message')

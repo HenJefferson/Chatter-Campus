@@ -88,17 +88,12 @@ class SpaceController extends Controller
     {
         $user = $request->user();
 
-        // Check access rules
-        if ($space->faculty && $space->faculty !== $user->faculty) {
-            return response()->json(['message' => 'Unauthorized: This space is restricted to ' . $space->faculty], 403);
-        }
-        if ($space->department && $space->department !== $user->department) {
-            return response()->json(['message' => 'Unauthorized: This space is restricted to ' . $space->department], 403);
-        }
-        if ($space->level && $space->level !== $user->level) {
-            return response()->json(['message' => 'Unauthorized: This space is restricted to level ' . $space->level], 403);
+        // Use the comprehensive eligibility check, which includes admin bypass
+        if (!$this->isEligible($user, $space)) {
+            return response()->json(['message' => 'Unauthorized. You are not eligible for this space.'], 403);
         }
 
+        // Original log and join logic (now only executes if eligible)
         \Log::info('Join request received', [
             'user_id' => $user->id,
             'space_id' => $space->id
