@@ -1,14 +1,13 @@
 FROM khromov/alpine-nginx-php8
 
 # Put our app in the web root that nginx-php-fpm expects
-WORKDIR /app
+WORKDIR /var/www/html
 
 # Explicitly create essential Laravel directories with correct permissions
-# The default user in php-fpm-alpine is 'root' during RUN commands.
-# Let's ensure these are created and writable by www-data from the start.
-RUN mkdir -p /app/storage /app/bootstrap/cache \
-    && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
-    && chmod -R 775 /app/storage /app/bootstrap/cache
+# The 'nobody' user is standard for Nginx/PHP-FPM in this image.
+RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chown -R nobody:nobody /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 COPY . .
 RUN composer install --no-dev --optimize-autoloader
