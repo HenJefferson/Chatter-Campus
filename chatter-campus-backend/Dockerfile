@@ -1,4 +1,4 @@
-FROM richarvey/nginx-php-fpm:3.1.6
+FROM khromov/alpine-nginx-php8
 
 # Put our app in the web root that nginx-php-fpm expects
 WORKDIR /var/www/html
