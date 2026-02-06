@@ -2,15 +2,15 @@ FROM khromov/alpine-nginx-php8
 
 # Put our app in the web root that nginx-php-fpm expects
 WORKDIR /app
-COPY . .
 
-# Create and set permissions for Laravel storage and cache directories
-# The 'www-data' user is standard for Nginx/PHP-FPM in many images.
-RUN mkdir -p /app/bootstrap/cache \
-    && chmod -R 775 /app/storage \
-    && chmod -R 775 /app/bootstrap/cache \
-    && chown -R www-data:www-data /app/storage \
-    && chown -R www-data:www-data /app/bootstrap/cache
+# Explicitly create essential Laravel directories with correct permissions
+# The default user in php-fpm-alpine is 'root' during RUN commands.
+# Let's ensure these are created and writable by www-data from the start.
+RUN mkdir -p /app/storage /app/bootstrap/cache \
+    && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
+    && chmod -R 775 /app/storage /app/bootstrap/cache
+
+COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Directly replace the default Nginx site config with ours
