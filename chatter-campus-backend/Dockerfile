@@ -3,6 +3,11 @@ FROM richarvey/nginx-php-fpm:3.1.6
 # Put our app in the web root that nginx-php-fpm expects
 WORKDIR /var/www/html
 COPY . .
+RUN composer install --no-dev --optimize-autoloader
+
+# Directly replace the default Nginx site config with ours
+COPY nginx-site.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Image config
 # Let the base image run composer to install vendor/
